@@ -12,7 +12,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
         SecurityAutoConfiguration.class})
 @Configuration
 @ComponentScan
-@EnableWebSocket
+//@EnableWebSocket
 public class AtmoChatApplication {
 
 	public static void main(String[] args) {

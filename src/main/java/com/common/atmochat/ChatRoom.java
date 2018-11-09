@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Simple annotated class that demonstrate the power of Atmosphere. This class supports all transports, support
  * message length guarantee, heart beat, message cache thanks to the {@link ManagedService}.
  */
-@ManagedService(path = "/chat")
+@ManagedService(path = "/chat/{room: [a-zA-Z][a-zA-Z_0-9]*}")
 public class ChatRoom {
     private final Logger logger = LoggerFactory.getLogger(ChatRoom.class);
 
@@ -24,8 +24,8 @@ public class ChatRoom {
 
     private final static String CHAT = "/chat/";
 
-//    @PathParam("room")
-    private String chatroomName = "aaa";
+    @PathParam("room")
+    private String chatroomName;
 
     @Autowired
     private BroadcasterFactory factory;

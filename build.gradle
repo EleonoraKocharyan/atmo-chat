@@ -92,9 +92,13 @@ dependencies {
 	compile group: 'org.springframework.boot', name: 'spring-boot-starter-websocket', version: '2.1.0.RELEASE'
 
 	compile group: 'org.atmosphere', name: 'atmosphere-spring', version: '2.3.0'
-	compile group: 'org.atmosphere', name: 'atmosphere-runtime', version: '2.5.1'
+	compile group: 'org.atmosphere', name: 'atmosphere-runtime', version: '2.5.2'
 	compile group: 'org.atmosphere', name: 'nettosphere', version: '3.0.10'
-	compile group: 'org.atmosphere', name: 'atmosphere-redis', version: '2.4.21'
+	compile group: 'org.atmosphere', name: 'atmosphere-redis', version: '2.4.2'
+	//redddis
+
+	compile group: 'javax.inject', name: 'javax.inject', version: '1'
+
 //	compile group: 'org.webjars', name: 'atmosphere-javascript', version: '2.2.3'
 	// https://mvnrepository.com/artifact/org.atmosphere/atmosphere-jquery
 //	compile group: 'org.atmosphere', name: 'atmosphere-jquery', version: '1.1.0.RC3'

@@ -92,7 +92,7 @@ dependencies {
 //	compile group: 'org.springframework.boot', name: 'spring-boot-starter-websocket', version: '2.1.0.RELEASE'
 
 //	compile group: 'org.atmosphere', name: 'atmosphere-spring', version: '2.3.0'
-	compile group: 'org.atmosphere', name: 'atmosphere-runtime', version: '2.5.2'
+	compile group: 'org.atmosphere', name: 'atmosphere-runtime', version: '2.4.7'
 	compile group: 'org.atmosphere', name: 'nettosphere', version: '3.0.10'
 	//	compile group: 'org.atmosphere', name: 'atmosphere-redis', version: '2.4.2'
 	//redddis

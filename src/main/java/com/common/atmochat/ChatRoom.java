@@ -56,7 +56,7 @@ public class ChatRoom {
     public ChatProtocol onReady(final AtmosphereResource r) {
         logger.info("Browser {} connected in room {}", r.uuid(), chatroomName);
 
-        return new ChatProtocol(users.keySet(), getRooms(r.broadcasters()));
+        return new ChatProtocol(users.keySet(), getRooms(factory.lookupAll()));
     }
 
     private static Collection<String> getRooms(Collection<Broadcaster> broadcasters) {

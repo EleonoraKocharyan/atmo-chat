@@ -23,7 +23,9 @@
 
 package com.common.atmochat;
 
+		import org.atmosphere.cpr.AtmosphereFramework;
 		import org.atmosphere.cpr.AtmosphereServlet;
+		import org.atmosphere.cpr.BroadcasterFactory;
 		import org.atmosphere.cpr.ContainerInitializer;
 		import org.springframework.boot.SpringApplication;
 		import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -52,6 +54,21 @@ public class AtmoChatApplication {
 	@Bean
 	public EmbeddedAtmosphereInitializer atmosphereInitializer() {
 		return new EmbeddedAtmosphereInitializer();
+	}
+
+
+
+	@Bean
+	public AtmosphereFramework atmosphereFramework() throws ServletException, InstantiationException, IllegalAccessException {
+		AtmosphereFramework atmosphereFramework = new AtmosphereFramework(false, false);
+		// atmosphereFramework.setBroadcasterCacheClassName(UUIDBroadcasterCache.class.getName());
+//		atmosphereFramework.addAtmosphereHandler("/chat/*", atmosphereChatHandler(), interceptors());
+		return atmosphereFramework;
+	}
+
+	@Bean
+	public BroadcasterFactory broadcasterFactory() throws ServletException, InstantiationException, IllegalAccessException {
+		return atmosphereFramework().getAtmosphereConfig().getBroadcasterFactory();
 	}
 
 	@Bean

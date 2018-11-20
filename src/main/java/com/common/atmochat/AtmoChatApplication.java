@@ -44,7 +44,7 @@ package com.common.atmochat;
 @EnableAutoConfiguration(exclude = {
 		SecurityAutoConfiguration.class})
 @Configuration
-@ComponentScan
+@ComponentScan(basePackages = "com.common")
 //@EnableWebSocket
 public class AtmoChatApplication {
 
@@ -62,7 +62,7 @@ public class AtmoChatApplication {
 				new AtmosphereServlet(), "/chat/*");
 //		registration.addInitParameter("org.atmosphere.cpr.packages", "sample");
 		registration.addInitParameter("org.atmosphere.interceptor.HeartbeatInterceptor"
-				+ ".clientHeartbeatFrequencyInSeconds", "10");
+				+ ".clientHeartbeatFrequencyInSeconds", "1");
 		registration.setLoadOnStartup(0);
 // Need to occur before the EmbeddedAtmosphereInitializer
 		registration.setOrder(Ordered.HIGHEST_PRECEDENCE);

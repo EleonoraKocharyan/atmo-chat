@@ -7,10 +7,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 //import javax.inject.Inject;
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Simple annotated class that demonstrate the power of Atmosphere. This class supports all transports, support
@@ -27,14 +30,21 @@ public class ChatRoom {
     @PathParam("room")
     private String chatroomName;
 
-    @Autowired
+    @Inject
     private BroadcasterFactory factory;
 
-    @Autowired
+    @Inject
     private AtmosphereResourceFactory resourceFactory;
 
-    @Autowired
+    @Inject
     private MetaBroadcaster metaBroadcaster;
+
+//    //todo Move this at some point
+//    private static boolean validate(String string, String stringPattern) {
+//        Pattern pattern = Pattern.compile(stringPattern);
+//        Matcher matcher = pattern.matcher(string);
+//        return matcher.matches();
+//    }
 
     /**
      * Invoked when the connection has been fully established and suspended, e.g ready for receiving messages.

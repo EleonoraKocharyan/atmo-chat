@@ -5,6 +5,7 @@ import org.atmosphere.config.managed.Encoder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 //import javax.inject.Inject;
+import javax.inject.Inject;
 import java.io.IOException;
 
 /**
@@ -12,7 +13,7 @@ import java.io.IOException;
  */
 public class JacksonEncoder implements Encoder<JacksonEncoder.Encodable, String> {
 
-    @Autowired
+    @Inject
     private ObjectMapper mapper;
 
     @Override

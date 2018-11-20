@@ -54,7 +54,7 @@ $(function () {
 
     function connect(chatroom) {
         // We are now ready to cut the request
-        alert(document.location.toString()+ 'chat/' + chatroom);
+        // alert(document.location.toString()+ 'chat/' + chatroom);
         var request = { url: document.location.toString() + 'chat/' + chatroom,
             contentType: "application/json",
             logLevel: 'debug',
@@ -79,14 +79,19 @@ $(function () {
         request.onMessage = function (response) {
 
             var message = response.responseBody;
+            alert(message);
+
             try {
                 var json = atmosphere.util.parseJSON(message);
+                alert(message);
+
             } catch (e) {
                 console.log('This doesn\'t look like a valid JSON: ', message);
                 return;
             }
 
             input.removeAttr('disabled').focus();
+            // alert(json.rooms)
             if (json.rooms) {
                 rooms.html($('<h2>', { text: 'Current room: ' + chatroom}));
 

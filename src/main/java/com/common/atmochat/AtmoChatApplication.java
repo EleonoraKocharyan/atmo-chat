@@ -92,3 +92,4 @@ public class AtmoChatApplication {
 		SpringApplication.run(AtmoChatApplication.class, args);
 	}
 }
+

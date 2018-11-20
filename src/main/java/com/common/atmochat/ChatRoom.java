@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
  * Simple annotated class that demonstrate the power of Atmosphere. This class supports all transports, support
  * message length guarantee, heart beat, message cache thanks to the {@link ManagedService}.
  */
-@ManagedService(path = "/chat/{room: [a-zA-Z][a-zA-Z_0-9]*}")
+@ManagedService(path = "/chat/{room}")
 public class ChatRoom {
     private final Logger logger = LoggerFactory.getLogger(ChatRoom.class);
 
@@ -55,7 +55,8 @@ public class ChatRoom {
     @DeliverTo(DeliverTo.DELIVER_TO.ALL)
     public ChatProtocol onReady(final AtmosphereResource r) {
         logger.info("Browser {} connected in room {}", r.uuid(), chatroomName);
-        return new ChatProtocol(users.keySet(), getRooms(factory.lookupAll()));
+
+        return new ChatProtocol(users.keySet(), getRooms(r.broadcasters()));
     }
 
     private static Collection<String> getRooms(Collection<Broadcaster> broadcasters) {

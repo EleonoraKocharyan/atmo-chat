@@ -120,6 +120,9 @@ public class ChatRoom {
 
     @Message(decoders = {UserDecoder.class})
     public void onPrivateMessage(UserMessage user) throws IOException {
+        if (user.getUser() == null) {
+            user.setUser(user.getAuthor());
+        }
         String userUUID = users.get(user.getUser());
         if (userUUID != null) {
             // Retrieve the original AtmosphereResource
@@ -130,10 +133,17 @@ public class ChatRoom {
                 if (!user.getUser().equalsIgnoreCase("all")) {
                     factory.lookup(CHAT + chatroomName).broadcast(m, r);
                 }
+            }else {
+                ChatProtocol m = new ChatProtocol(user.getUser(), user.getMessage().split(":")[0], users.keySet(), getRooms(factory.lookupAll()));
+                factory.lookup(CHAT + chatroomName).broadcast(m);
             }
         } else {
-            ChatProtocol m = new ChatProtocol(user.getUser(), " sent a message to all chatroom: " + user.getMessage().split(":")[1], users.keySet(), getRooms(factory.lookupAll()));
-            metaBroadcaster.broadcastTo("/*", m);
+            String message = user.getMessage().split(":").length>1?" sent a message to all chatroom: " + user.getMessage().split(":")[1]:"";
+
+            ChatProtocol m = new ChatProtocol(user.getUser(), message, users.keySet(), getRooms(factory.lookupAll()));
+            factory.lookup(CHAT + chatroomName).broadcast(m);
+
+//            metaBroadcaster.broadcastTo("/*", m);
         }
     }
 

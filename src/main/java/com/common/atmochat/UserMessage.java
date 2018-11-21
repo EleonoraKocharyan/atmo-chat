@@ -4,6 +4,8 @@ public class UserMessage {
 
     private String message;
     private String user;
+    private String author;
+    private String uuid;
 
     public UserMessage(){
     }
@@ -24,4 +26,19 @@ public class UserMessage {
         this.message = message;
     }
 
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 }

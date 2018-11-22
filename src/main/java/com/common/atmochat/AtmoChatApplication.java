@@ -23,6 +23,7 @@
 
 package com.common.atmochat;
 
+		import com.github.mongobee.Mongobee;
 		import org.atmosphere.cpr.AtmosphereFramework;
 		import org.atmosphere.cpr.AtmosphereServlet;
 		import org.atmosphere.cpr.BroadcasterFactory;
@@ -50,6 +51,16 @@ package com.common.atmochat;
 //@EnableWebSocket
 public class AtmoChatApplication {
 
+
+	@Bean
+	public Mongobee mongobee(){
+		Mongobee runner = new Mongobee("mongodb://localhost:27017/chat");
+		runner.setDbName("yourDbName");         // host must be set if not set in URI
+		runner.setChangeLogsScanPackage(
+				"com.common.atmochat.db.changelogs"); // the package to be scanned for changesets
+
+		return runner;
+	}
 
 	@Bean
 	public EmbeddedAtmosphereInitializer atmosphereInitializer() {

@@ -1,8 +1,8 @@
-package com.common.atmochat;
+package com.common.atmochat.cipher;
 
+import com.common.atmochat.dto.ChatProtocol;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.atmosphere.config.managed.Decoder;
-import org.springframework.beans.factory.annotation.Autowired;
 
 //import javax.inject.Inject;
 import javax.inject.Inject;

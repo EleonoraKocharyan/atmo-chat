@@ -76,17 +76,21 @@ $(function () {
             input.removeAttr('disabled').focus();
         };
 
+        request.reconnectOnServerError = false;
+
         request.onMessage = function (response) {
 
             var message = response.responseBody;
-            alert(message);
+
+            // alert(message);
 
             try {
                 var json = atmosphere.util.parseJSON(message);
-                alert(message);
+                // alert(message);
 
             } catch (e) {
                 console.log('This doesn\'t look like a valid JSON: ', message);
+                message=null;
                 return;
             }
 
@@ -127,8 +131,10 @@ $(function () {
         };
 
         request.onError = function (response) {
+            // alert("error");
             content.html($('<p>', { text: 'Sorry, but there\'s some problem with your '
                 + 'socket or the server is down' }));
+            // aut
             logged = false;
         };
 

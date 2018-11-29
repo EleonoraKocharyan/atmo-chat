@@ -1,31 +1,51 @@
-package com.common.atmochat;
+package com.common.atmochat.controller;
 
+import com.common.atmochat.cipher.JacksonEncoder;
+import com.common.atmochat.cipher.ProtocolDecoder;
+import com.common.atmochat.cipher.UserDecoder;
+import com.common.atmochat.config.RealTimeHandshakeInterceptor;
+import com.common.atmochat.data.domain.ChatRoom;
+import com.common.atmochat.data.domain.User;
+import com.common.atmochat.data.service.ChatRoomService;
+import com.common.atmochat.data.service.UserService;
+import com.common.atmochat.data.service.impl.UserServiceImpl;
+import com.common.atmochat.dto.ChatProtocol;
+import com.common.atmochat.dto.UserMessage;
+import com.common.atmochat.util.BeanUtil;
 import org.atmosphere.config.service.*;
 import org.atmosphere.cpr.*;
+import org.atmosphere.inject.AtmosphereResponseIntrospector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 //import javax.inject.Inject;
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Simple annotated class that demonstrate the power of Atmosphere. This class supports all transports, support
  * message length guarantee, heart beat, message cache thanks to the {@link ManagedService}.
  */
-@ManagedService(path = "/chat/{room}")
-public class ChatRoom {
-    private final Logger logger = LoggerFactory.getLogger(ChatRoom.class);
+@ManagedService(path = "/chat/{room}", interceptors = { org.atmosphere.interceptor.AtmosphereResourceLifecycleInterceptor.class,
+        org.atmosphere.client.TrackMessageSizeInterceptor.class, org.atmosphere.interceptor.SuspendTrackerInterceptor.class,
+        RealTimeHandshakeInterceptor.class })
+
+public class ChatRoomController extends SpringBeanAutowiringSupport {
+    private final Logger logger = LoggerFactory.getLogger(ChatRoomController.class);
 
     private final ConcurrentHashMap<String, String> users = new ConcurrentHashMap<String, String>();
 
     private final static String CHAT = "/chat/";
+
+    private final ChatRoomService chatRoomService = BeanUtil.getBean(ChatRoomService.class);
+
+    private final UserService userService = BeanUtil.getBean(UserService.class);
+
 
     @PathParam("room")
     private String chatroomName;
@@ -35,9 +55,12 @@ public class ChatRoom {
 
     @Inject
     private AtmosphereResourceFactory resourceFactory;
-
-    @Inject
-    private MetaBroadcaster metaBroadcaster;
+//
+//    @Autowired
+//    private MetaBroadcaster metaBroadcaster;
+//
+//    @Autowired
+//    private UserService userService;
 
 //    //todo Move this at some point
 //    private static boolean validate(String string, String stringPattern) {
@@ -53,9 +76,19 @@ public class ChatRoom {
      */
     @Ready(encoders = {JacksonEncoder.class})
     @DeliverTo(DeliverTo.DELIVER_TO.ALL)
-    public ChatProtocol onReady(final AtmosphereResource r) {
+    public ChatProtocol onReady(final AtmosphereResource r) throws IllegalAccessException, IOException {
+        ChatRoom chatRoom = chatRoomService.findByName(chatroomName);
+        if(chatRoom==null){
+            r.getResponse().sendError(404);
+            return null;
+        }
+
         logger.info("Browser {} connected in room {}", r.uuid(), chatroomName);
 
+//        UserServiceImpl userServiceImpl = BeanUtil.getBean(UserServiceImpl.class);
+//        userServiceImpl.save(new User("id","manaaame", new Date(),new Date()));
+        //Todo change to id
+        if(chatRoom!=null) {chatRoom.getMembers().forEach(user->users.put(user.getName(),"uu_id")); }
         return new ChatProtocol(users.keySet(), getRooms(factory.lookupAll()));
     }
 
@@ -96,7 +129,15 @@ public class ChatRoom {
      * @throws IOException
      */
     @Message(encoders = {JacksonEncoder.class}, decoders = {ProtocolDecoder.class})
-    public ChatProtocol onMessage(ChatProtocol message) throws IOException {
+    public ChatProtocol onMessage(ChatProtocol message) throws IOException, IllegalAccessException {
+
+       logger.info("Number of active threads from the given thread: " + Thread.activeCount());
+
+
+        ChatRoom chatRoom = chatRoomService.findByName(chatroomName);
+        if(chatRoom==null || !users.containsKey(message.getAuthor())){
+            return null;
+        }
 
         if (message.getMessage().contains("disconnecting")) {
             String author = message.getAuthor();
@@ -108,13 +149,22 @@ public class ChatRoom {
             return new ChatProtocol(author, " disconnected from room " + chatroomName, users.keySet(), getRooms(factory.lookupAll()));
         }
 
-        if (!users.containsKey(message.getAuthor())) {
-            users.put(message.getAuthor(), message.getUuid());
-            return new ChatProtocol(message.getAuthor(), " entered room " + chatroomName, users.keySet(), getRooms(factory.lookupAll()));
-        }
+//        if (!users.containsKey(message.getAuthor())) {
+
+//            users.put(message.getAuthor(), message.getUuid());
+//            //region saving the chat room
+//            User newMember = userService.save(new User("db_id", message.getAuthor()));
+//
+//            //endregion saving the chat room
+//            return new ChatProtocol(message.getAuthor(), " entered room " + chatroomName, users.keySet(), getRooms(factory.lookupAll()));
+//        }
 
         message.setUsers(users.keySet());
         logger.info("{} just send {}", message.getAuthor(), message.getMessage());
+        //region saving the chat room
+        chatRoomService.save(new ChatRoom(chatRoom.getId(),chatroomName,message.getMessage(),chatRoom.getMembers(),userService.findByName(message.getAuthor())));
+        //endregion saving the chat room
+
         return new ChatProtocol(message.getAuthor(), message.getMessage(), users.keySet(), getRooms(factory.lookupAll()));
     }
 

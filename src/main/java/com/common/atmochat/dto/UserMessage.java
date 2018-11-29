@@ -1,4 +1,4 @@
-package com.common.atmochat;
+package com.common.atmochat.dto;
 
 public class UserMessage {
 

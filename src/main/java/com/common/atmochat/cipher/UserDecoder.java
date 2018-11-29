@@ -1,5 +1,6 @@
-package com.common.atmochat;
+package com.common.atmochat.cipher;
 
+import com.common.atmochat.dto.UserMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.atmosphere.config.managed.Decoder;
 

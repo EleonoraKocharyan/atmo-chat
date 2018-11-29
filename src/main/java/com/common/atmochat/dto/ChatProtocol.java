@@ -1,4 +1,6 @@
-package com.common.atmochat;
+package com.common.atmochat.dto;
+
+import com.common.atmochat.cipher.JacksonEncoder;
 
 import java.util.*;
 

@@ -19,7 +19,7 @@ public abstract class AbstractEntity {
 
     // region Instance Fields
     @Id
-    protected Long id;
+    protected String id;
 
 //    @CreationTimestamp
     private Date createdAt;
@@ -36,11 +36,13 @@ public abstract class AbstractEntity {
     // endregion
 
     // region Getters and Setters
-    public Long getId() {
+
+
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

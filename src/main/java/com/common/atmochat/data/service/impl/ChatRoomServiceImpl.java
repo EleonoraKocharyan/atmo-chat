@@ -24,7 +24,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     @Override
     public ChatRoom save(ChatRoom chatRoom) {
         chatRoom.setUpdatedAt(new Date());
-        chatRoom.setId(nextSequenceUtil.getNextSequence("chatRoom"));
+
+        if (chatRoom.getId() == null)
+            chatRoom.setId(nextSequenceUtil.getNextSequence("chatRoom"));
 
         return chatRoomRepository.save(chatRoom);
     }

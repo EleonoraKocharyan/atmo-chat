@@ -5,35 +5,32 @@ import com.common.atmochat.cipher.ProtocolDecoder;
 import com.common.atmochat.cipher.UserDecoder;
 import com.common.atmochat.config.RealTimeHandshakeInterceptor;
 import com.common.atmochat.data.domain.ChatRoom;
-import com.common.atmochat.data.domain.User;
 import com.common.atmochat.data.service.ChatRoomService;
 import com.common.atmochat.data.service.UserService;
-import com.common.atmochat.data.service.impl.UserServiceImpl;
 import com.common.atmochat.dto.ChatProtocol;
 import com.common.atmochat.dto.UserMessage;
 import com.common.atmochat.util.BeanUtil;
 import org.atmosphere.config.service.*;
 import org.atmosphere.cpr.*;
-import org.atmosphere.inject.AtmosphereResponseIntrospector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-//import javax.inject.Inject;
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+
+//import javax.inject.Inject;
 
 /**
  * Simple annotated class that demonstrate the power of Atmosphere. This class supports all transports, support
  * message length guarantee, heart beat, message cache thanks to the {@link ManagedService}.
  */
-@ManagedService(path = "/chat/{room}", interceptors = { org.atmosphere.interceptor.AtmosphereResourceLifecycleInterceptor.class,
+@ManagedService(path = "/chat/{room}", interceptors = {org.atmosphere.interceptor.AtmosphereResourceLifecycleInterceptor.class,
         org.atmosphere.client.TrackMessageSizeInterceptor.class, org.atmosphere.interceptor.SuspendTrackerInterceptor.class,
-        RealTimeHandshakeInterceptor.class })
+        RealTimeHandshakeInterceptor.class})
 
 public class ChatRoomController extends SpringBeanAutowiringSupport {
     private final Logger logger = LoggerFactory.getLogger(ChatRoomController.class);
@@ -59,15 +56,6 @@ public class ChatRoomController extends SpringBeanAutowiringSupport {
 //    @Autowired
 //    private MetaBroadcaster metaBroadcaster;
 //
-//    @Autowired
-//    private UserService userService;
-
-//    //todo Move this at some point
-//    private static boolean validate(String string, String stringPattern) {
-//        Pattern pattern = Pattern.compile(stringPattern);
-//        Matcher matcher = pattern.matcher(string);
-//        return matcher.matches();
-//    }
 
     /**
      * Invoked when the connection has been fully established and suspended, e.g ready for receiving messages.
@@ -78,7 +66,7 @@ public class ChatRoomController extends SpringBeanAutowiringSupport {
     @DeliverTo(DeliverTo.DELIVER_TO.ALL)
     public ChatProtocol onReady(final AtmosphereResource r) throws IllegalAccessException, IOException {
         ChatRoom chatRoom = chatRoomService.findByName(chatroomName);
-        if(chatRoom==null){
+        if (chatRoom == null) {
             r.getResponse().sendError(404);
             return null;
         }
@@ -88,7 +76,9 @@ public class ChatRoomController extends SpringBeanAutowiringSupport {
 //        UserServiceImpl userServiceImpl = BeanUtil.getBean(UserServiceImpl.class);
 //        userServiceImpl.save(new User("id","manaaame", new Date(),new Date()));
         //Todo change to id
-        if(chatRoom!=null) {chatRoom.getMembers().forEach(user->users.put(user.getName(),"uu_id")); }
+        if (chatRoom != null) {
+            chatRoom.getMembers().forEach(user -> users.put(user.getName(), "uu_id"));
+        }
         return new ChatProtocol(users.keySet(), getRooms(factory.lookupAll()));
     }
 
@@ -131,17 +121,18 @@ public class ChatRoomController extends SpringBeanAutowiringSupport {
     @Message(encoders = {JacksonEncoder.class}, decoders = {ProtocolDecoder.class})
     public ChatProtocol onMessage(ChatProtocol message) throws IOException, IllegalAccessException {
 
-       logger.info("Number of active threads from the given thread: " + Thread.activeCount());
+        logger.info("Number of active threads from the given thread: " + Thread.activeCount());
 
+        logger.info("uuid: " + message.getUuid());
 
         ChatRoom chatRoom = chatRoomService.findByName(chatroomName);
-        if(chatRoom==null || !users.containsKey(message.getAuthor())){
+        if (chatRoom == null || !users.containsKey(message.getAuthor())) {
             return null;
         }
 
         if (message.getMessage().contains("disconnecting")) {
             String author = message.getAuthor();
-            if (author!= null) {
+            if (author != null) {
                 users.remove(author);
             } else {
                 author = "";
@@ -161,8 +152,15 @@ public class ChatRoomController extends SpringBeanAutowiringSupport {
 
         message.setUsers(users.keySet());
         logger.info("{} just send {}", message.getAuthor(), message.getMessage());
+
         //region saving the chat room
-        chatRoomService.save(new ChatRoom(chatRoom.getId(),chatroomName,message.getMessage(),chatRoom.getMembers(),userService.findByName(message.getAuthor())));
+        chatRoomService.save(new ChatRoom(
+                message.getUuid(),
+                chatRoom.getRoom_id(),
+                chatroomName,
+                message.getMessage(),
+                chatRoom.getMembers(),
+                userService.findByName(message.getAuthor())));
         //endregion saving the chat room
 
         return new ChatProtocol(message.getAuthor(), message.getMessage(), users.keySet(), getRooms(factory.lookupAll()));
@@ -183,12 +181,12 @@ public class ChatRoomController extends SpringBeanAutowiringSupport {
                 if (!user.getUser().equalsIgnoreCase("all")) {
                     factory.lookup(CHAT + chatroomName).broadcast(m, r);
                 }
-            }else {
+            } else {
                 ChatProtocol m = new ChatProtocol(user.getUser(), user.getMessage().split(":")[0], users.keySet(), getRooms(factory.lookupAll()));
                 factory.lookup(CHAT + chatroomName).broadcast(m);
             }
         } else {
-            String message = user.getMessage().split(":").length>1?" sent a message to all chatroom: " + user.getMessage().split(":")[1]:"";
+            String message = user.getMessage().split(":").length > 1 ? " sent a message to all chatroom: " + user.getMessage().split(":")[1] : "";
 
             ChatProtocol m = new ChatProtocol(user.getUser(), message, users.keySet(), getRooms(factory.lookupAll()));
             factory.lookup(CHAT + chatroomName).broadcast(m);

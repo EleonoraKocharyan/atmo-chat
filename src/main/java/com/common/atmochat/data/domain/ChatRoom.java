@@ -1,10 +1,8 @@
 package com.common.atmochat.data.domain;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Collection;
-import java.util.Date;
 
 /**
  * Created by eleonorakocharyan on 11/27/18.
@@ -12,6 +10,7 @@ import java.util.Date;
 @Document
 public class ChatRoom extends AbstractEntity {
 
+    private Long room_id;
     private String name;
     private String message;
     private Collection<User> members;
@@ -30,8 +29,9 @@ public class ChatRoom extends AbstractEntity {
         this.members = members;
     }
 
-    public ChatRoom(Long id, String name, String message, Collection<User> members, User author) {
+    public ChatRoom(String id, Long room_id, String name, String message, Collection<User> members, User author) {
         this.id = id;
+        this.room_id = room_id;
         this.name = name;
         this.message = message;
         this.members = members;
@@ -39,6 +39,14 @@ public class ChatRoom extends AbstractEntity {
     }
 
     public ChatRoom() {
+    }
+
+    public Long getRoom_id() {
+        return room_id;
+    }
+
+    public void setRoom_id(Long room_id) {
+        this.room_id = room_id;
     }
 
     public String getName() {

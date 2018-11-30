@@ -14,13 +14,13 @@ public class NextSequenceUtil {
     @Autowired
     private MongoOperations mongo;
 
-    public Long getNextSequence(String seqName)
+    public String getNextSequence(String seqName)
     {
         CustomSequences counter = mongo.findAndModify(
                 query(where("_id").is(seqName)),
                 new Update().inc("seq",1),
                 options().returnNew(true).upsert(true),
                 CustomSequences.class);
-        return counter.getSeq();
+        return counter.getSeq().toString();
     }
 }

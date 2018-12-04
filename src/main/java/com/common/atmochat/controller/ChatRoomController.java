@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Simple annotated class that demonstrate the power of Atmosphere. This class supports all transports, support
  * message length guarantee, heart beat, message cache thanks to the {@link ManagedService}.
  */
-@ManagedService(path = "/chat/room/{room}", interceptors = {org.atmosphere.interceptor.AtmosphereResourceLifecycleInterceptor.class,
+@ManagedService(path = "/chat/{room}", interceptors = {org.atmosphere.interceptor.AtmosphereResourceLifecycleInterceptor.class,
         org.atmosphere.client.TrackMessageSizeInterceptor.class, org.atmosphere.interceptor.SuspendTrackerInterceptor.class,
         RealTimeHandshakeInterceptor.class})
 

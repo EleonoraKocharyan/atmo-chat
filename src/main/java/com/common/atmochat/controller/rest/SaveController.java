@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * Created by eleonorakocharyan on 11/29/18.
  */
 @RestController
-@RequestMapping("/chat/rest/save")
+@RequestMapping("/rest/save")
 public class SaveController {
 
     @Autowired

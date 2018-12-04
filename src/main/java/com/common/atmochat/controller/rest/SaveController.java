@@ -8,6 +8,7 @@ import com.common.atmochat.dto.rest.ChatRoomDTO;
 import com.common.atmochat.dto.rest.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,7 +29,7 @@ public class SaveController {
     @Autowired
     private ChatRoomService chatRoomService;
 
-    @RequestMapping("/chatroom")
+    @PostMapping("/chatroom")
     public ResponseEntity saveChatRoom(@RequestBody ChatRoomDTO chatRoomDTO) {
         Collection<User> users = chatRoomDTO.getMembersBackIds()
                 .stream()
@@ -39,7 +40,7 @@ public class SaveController {
         return ResponseEntity.ok(chatRoom.getId());
     }
 
-    @RequestMapping("/user")
+    @PostMapping("/user")
     public ResponseEntity saveUser(@RequestBody UserDTO userDTO) {
         userService.save(new User(userDTO.getBackId(),userDTO.getName()));
         return ResponseEntity.ok(true);

@@ -55,7 +55,8 @@ $(function () {
     function connect(chatroom) {
         // We are now ready to cut the request
         // alert(document.location.toString()+ 'chat/' + chatroom);
-        var request = { url: document.location.toString() + 'chat/' + chatroom,
+        var request = {
+            url: document.location.toString() + 'chat/room/' + chatroom,
             contentType: "application/json",
             logLevel: 'debug',
             transport: transport,

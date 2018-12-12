@@ -7,6 +7,6 @@ import com.common.atmochat.data.domain.ChatRoom;
  */
 public interface ChatRoomService {
     ChatRoom save(ChatRoom chatRoom);
-    ChatRoom findByName(String name);
-    ChatRoom findById(Long id);
+
+    ChatRoom findByRoomId(String roomId);
 }

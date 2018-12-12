@@ -18,7 +18,7 @@ $(function () {
     var uuid = 0;
 
     header.html($('<h3>', { text: 'Atmosphere Chat. Default transport is ' + transport + ', fallback is ' + fallbackTransport }));
-    status.text('Choose chatroom:');
+    status.text('Chatroom ID:');
     input.removeAttr('disabled').focus();
 
     input.keydown(function (e) {
@@ -43,7 +43,7 @@ $(function () {
                 var a = msg.split(":")[0];
                 subSocket.push(atmosphere.util.stringifyJSON({ user: a, message: msg}));
             } else {
-                subSocket.push(atmosphere.util.stringifyJSON({ author: author, message: msg, uuid: uuid }));
+                subSocket.push(atmosphere.util.stringifyJSON({author: author, message: msg}));
             }
 
             if (myName === false) {
@@ -54,7 +54,6 @@ $(function () {
 
     function connect(chatroom) {
         // We are now ready to cut the request
-        // alert(document.location.toString()+ 'chat/' + chatroom);
         var request = {
             url: document.location.toString() + 'chat/' + chatroom,
             contentType: "application/json",
@@ -66,7 +65,7 @@ $(function () {
 
         request.onOpen = function (response) {
             content.html($('<p>', { text: 'Atmosphere connected using ' + response.transport }));
-            status.text('Choose name:');
+            status.text('User ID:');
             input.removeAttr('disabled').focus();
             transport = response.transport;
             uuid = response.request.uuid;
@@ -83,11 +82,11 @@ $(function () {
 
             var message = response.responseBody;
 
-            // alert(message);
-
+            if (status.text() === 'Chatroom ID:') {
+                status.text('User ID:');
+            }
             try {
                 var json = atmosphere.util.parseJSON(message);
-                // alert(message);
 
             } catch (e) {
                 console.log('This doesn\'t look like a valid JSON: ', message);
@@ -96,7 +95,6 @@ $(function () {
             }
 
             input.removeAttr('disabled').focus();
-            // alert(json.rooms)
             if (json.rooms) {
                 rooms.html($('<h2>', { text: 'Current room: ' + chatroom}));
 
@@ -109,20 +107,24 @@ $(function () {
 
             if (json.users) {
                 var r = 'Connected users: ';
-                for (var i = 0; i < json.users.length; i++) {
-                    r += json.users[i] + "  ";
-                }
+                Object.keys(json.users).forEach(function (key) {
+                    r += json.users[key] + " ";
+                });
+                // for (var i = 0; i < json.users.length; i++) {
+                //     r += json.users[i] + "  ";
+                // }
                 users.html($('<h3>', { text: r }))
             }
+
 
             if (json.author) {
                 if (!logged && myName) {
                     logged = true;
-                    status.text(myName + ': ').css('color', 'blue');
+                    status.text(json.users[myName] + ': ').css('color', 'blue');
                 } else {
                     var me = json.author == author;
                     var date = typeof(json.time) == 'string' ? parseInt(json.time) : json.time;
-                    addMessage(json.author, json.message, me ? 'blue' : 'black', new Date(date));
+                    addMessage(json.users[json.author], json.message, me ? 'blue' : 'black', new Date(date));
                 }
             }
         };
@@ -132,7 +134,6 @@ $(function () {
         };
 
         request.onError = function (response) {
-            // alert("error");
             content.html($('<p>', { text: 'Sorry, but there\'s some problem with your '
                 + 'socket or the server is down' }));
             // aut

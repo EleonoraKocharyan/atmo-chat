@@ -45,7 +45,7 @@ public class ChatRoomController extends SpringBeanAutowiringSupport {
 
 
     @PathParam("room")
-    private String chatroomName;
+    private String chatroomId;
 
     @Inject
     private BroadcasterFactory factory;
@@ -64,22 +64,22 @@ public class ChatRoomController extends SpringBeanAutowiringSupport {
      */
     @Ready(encoders = {JacksonEncoder.class})
     @DeliverTo(DeliverTo.DELIVER_TO.ALL)
-    public ChatProtocol onReady(final AtmosphereResource r) throws IllegalAccessException, IOException {
-        ChatRoom chatRoom = chatRoomService.findByName(chatroomName);
+    public ChatProtocol onReady(final AtmosphereResource r) throws IOException {
+        ChatRoom chatRoom = chatRoomService.findByRoomId(chatroomId);
         if (chatRoom == null) {
             r.getResponse().sendError(404);
             return null;
         }
 
-        logger.info("Browser {} connected in room {}", r.uuid(), chatroomName);
+        logger.info("Browser {} connected in room {}", r.uuid(), chatroomId);
 
 //        UserServiceImpl userServiceImpl = BeanUtil.getBean(UserServiceImpl.class);
 //        userServiceImpl.save(new User("id","manaaame", new Date(),new Date()));
         //Todo change to id
         if (chatRoom != null) {
-            chatRoom.getMembers().forEach(user -> users.put(user.getName(), "uu_id"));
+            chatRoom.getMembers().forEach(user -> users.put(user.getBackId(), user.getName()));
         }
-        return new ChatProtocol(users.keySet(), getRooms(factory.lookupAll()));
+        return new ChatProtocol(users, getRooms(factory.lookupAll()));
     }
 
     private static Collection<String> getRooms(Collection<Broadcaster> broadcasters) {
@@ -119,13 +119,13 @@ public class ChatRoomController extends SpringBeanAutowiringSupport {
      * @throws IOException
      */
     @Message(encoders = {JacksonEncoder.class}, decoders = {ProtocolDecoder.class})
-    public ChatProtocol onMessage(ChatProtocol message) throws IOException, IllegalAccessException {
+    public ChatProtocol onMessage(ChatProtocol message) {
 
         logger.info("Number of active threads from the given thread: " + Thread.activeCount());
 
         logger.info("uuid: " + message.getUuid());
 
-        ChatRoom chatRoom = chatRoomService.findByName(chatroomName);
+        ChatRoom chatRoom = chatRoomService.findByRoomId(chatroomId);
         if (chatRoom == null || !users.containsKey(message.getAuthor())) {
             return null;
         }
@@ -137,7 +137,7 @@ public class ChatRoomController extends SpringBeanAutowiringSupport {
             } else {
                 author = "";
             }
-            return new ChatProtocol(author, " disconnected from room " + chatroomName, users.keySet(), getRooms(factory.lookupAll()));
+            return new ChatProtocol(author, " disconnected from room " + chatroomId, users, getRooms(factory.lookupAll()));
         }
 
 //        if (!users.containsKey(message.getAuthor())) {
@@ -150,20 +150,20 @@ public class ChatRoomController extends SpringBeanAutowiringSupport {
 //            return new ChatProtocol(message.getAuthor(), " entered room " + chatroomName, users.keySet(), getRooms(factory.lookupAll()));
 //        }
 
-        message.setUsers(users.keySet());
+        message.setUsers(users);
         logger.info("{} just send {}", message.getAuthor(), message.getMessage());
 
         //region saving the chat room
         chatRoomService.save(new ChatRoom(
                 message.getUuid(),
-                chatRoom.getRoom_id(),
-                chatroomName,
+                chatRoom.getRoomId(),
+                chatRoom.getName(),
                 message.getMessage(),
                 chatRoom.getMembers(),
-                userService.findByName(message.getAuthor())));
+                userService.findByBackId(message.getAuthor())));
         //endregion saving the chat room
 
-        return new ChatProtocol(message.getAuthor(), message.getMessage(), users.keySet(), getRooms(factory.lookupAll()));
+        return new ChatProtocol(message.getAuthor(), message.getMessage(), users, getRooms(factory.lookupAll()));
     }
 
     @Message(decoders = {UserDecoder.class})
@@ -177,19 +177,19 @@ public class ChatRoomController extends SpringBeanAutowiringSupport {
             AtmosphereResource r = resourceFactory.find(userUUID);
 
             if (r != null) {
-                ChatProtocol m = new ChatProtocol(user.getUser(), " sent you a private message: " + user.getMessage().split(":")[1], users.keySet(), getRooms(factory.lookupAll()));
+                ChatProtocol m = new ChatProtocol(user.getUser(), " sent you a private message: " + user.getMessage().split(":")[1], users, getRooms(factory.lookupAll()));
                 if (!user.getUser().equalsIgnoreCase("all")) {
-                    factory.lookup(CHAT + chatroomName).broadcast(m, r);
+                    factory.lookup(CHAT + chatroomId).broadcast(m, r);
                 }
             } else {
-                ChatProtocol m = new ChatProtocol(user.getUser(), user.getMessage().split(":")[0], users.keySet(), getRooms(factory.lookupAll()));
-                factory.lookup(CHAT + chatroomName).broadcast(m);
+                ChatProtocol m = new ChatProtocol(user.getUser(), user.getMessage().split(":")[0], users, getRooms(factory.lookupAll()));
+                factory.lookup(CHAT + chatroomId).broadcast(m);
             }
         } else {
             String message = user.getMessage().split(":").length > 1 ? " sent a message to all chatroom: " + user.getMessage().split(":")[1] : "";
 
-            ChatProtocol m = new ChatProtocol(user.getUser(), message, users.keySet(), getRooms(factory.lookupAll()));
-            factory.lookup(CHAT + chatroomName).broadcast(m);
+            ChatProtocol m = new ChatProtocol(user.getUser(), message, users, getRooms(factory.lookupAll()));
+            factory.lookup(CHAT + chatroomId).broadcast(m);
 
 //            metaBroadcaster.broadcastTo("/*", m);
         }

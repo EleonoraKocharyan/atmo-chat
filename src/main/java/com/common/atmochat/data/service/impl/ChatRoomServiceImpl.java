@@ -32,12 +32,8 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     }
 
     @Override
-    public ChatRoom findByName(String name) {
-        return chatRoomRepository.findChatRoomByName(name);
+    public ChatRoom findByRoomId(String roomId) {
+        return chatRoomRepository.findChatRoomByRoomId(roomId);
     }
 
-    @Override
-    public ChatRoom findById(Long id) {
-        return chatRoomRepository.findById(id);
-    }
 }

@@ -9,7 +9,7 @@ public class ChatProtocol implements JacksonEncoder.Encodable {
     private String message = "";
     private String author = "";
     private long time = System.currentTimeMillis();
-    private List<String> users = new ArrayList<String>();
+    private Map<String, String> users = new HashMap<>();
     private List<String> rooms = new ArrayList<String>();
     private String uuid = UUID.randomUUID().toString();
 
@@ -21,17 +21,20 @@ public class ChatProtocol implements JacksonEncoder.Encodable {
         this.author = author;
         this.message = message;
         this.time = new Date().getTime();
+//        this.uuid = UUID.randomUUID().toString();
     }
 
-    public ChatProtocol(String author, String message, Collection<String> users, Collection<String> rooms) {
+    public ChatProtocol(String author, String message, Map<String, String> users, Collection<String> rooms) {
         this(author, message);
-        this.users.addAll(users);
+        this.users.putAll(users);
         this.rooms.addAll(rooms);
+//        this.uuid = UUID.randomUUID().toString();
     }
 
-    public ChatProtocol(Collection<String> users, Collection<String> rooms) {
-        this.users.addAll(users);
+    public ChatProtocol(Map<String, String> users, Collection<String> rooms) {
+        this.users.putAll(users);
         this.rooms.addAll(rooms);
+//        this.uuid = UUID.randomUUID().toString();
     }
 
     public String getMessage() {
@@ -58,16 +61,12 @@ public class ChatProtocol implements JacksonEncoder.Encodable {
         this.time = time;
     }
 
-    public List<String> getUsers() {
+    public Map<String, String> getUsers() {
         return users;
     }
 
-    public void setUsers(Collection<String> users) {
-        this.users.addAll(users);
-    }
-
-    public void setUsers(List<String> users) {
-        this.users = users;
+    public void setUsers(Map<String, String> users) {
+        this.users.putAll(users);
     }
 
     public String getUuid() {

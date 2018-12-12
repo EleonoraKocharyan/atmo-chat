@@ -11,6 +11,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ChatRoomRepository extends MongoRepository<ChatRoom, String> {
 
-    ChatRoom findChatRoomByName(String name);
-    ChatRoom findById(Long id);
+    ChatRoom findChatRoomByRoomId(String roomId);
 }

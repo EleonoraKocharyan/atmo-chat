@@ -3,6 +3,7 @@ package com.common.atmochat.data.domain;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Collection;
+import java.util.UUID;
 
 /**
  * Created by eleonorakocharyan on 11/27/18.
@@ -10,28 +11,21 @@ import java.util.Collection;
 @Document
 public class ChatRoom extends AbstractEntity {
 
-    private Long room_id;
+    private String roomId;
     private String name;
     private String message;
     private Collection<User> members;
     private User author;
 
-
-    public ChatRoom(String name, String message, Collection<User> members, User author) {
-        this.name = name;
-        this.message = message;
-        this.members = members;
-        this.author = author;
-    }
-
     public ChatRoom(String name, Collection<User> members) {
         this.name = name;
         this.members = members;
+        this.roomId = UUID.randomUUID().toString();
     }
 
-    public ChatRoom(String id, Long room_id, String name, String message, Collection<User> members, User author) {
+    public ChatRoom(String id, String roomId, String name, String message, Collection<User> members, User author) {
         this.id = id;
-        this.room_id = room_id;
+        this.roomId = roomId;
         this.name = name;
         this.message = message;
         this.members = members;
@@ -41,12 +35,12 @@ public class ChatRoom extends AbstractEntity {
     public ChatRoom() {
     }
 
-    public Long getRoom_id() {
-        return room_id;
+    public String getRoomId() {
+        return roomId;
     }
 
-    public void setRoom_id(Long room_id) {
-        this.room_id = room_id;
+    public void setRoomId(String roomId) {
+        this.roomId = roomId;
     }
 
     public String getName() {

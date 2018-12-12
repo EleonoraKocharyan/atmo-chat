@@ -8,6 +8,5 @@ import com.common.atmochat.data.domain.User;
 public interface UserService {
 
     User save(User user);
-    User findByName(String name);
     User findByBackId(String backId);
 }

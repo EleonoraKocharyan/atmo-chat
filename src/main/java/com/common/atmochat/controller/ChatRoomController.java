@@ -4,8 +4,7 @@ import com.common.atmochat.cipher.JacksonEncoder;
 import com.common.atmochat.cipher.ProtocolDecoder;
 import com.common.atmochat.cipher.UserDecoder;
 import com.common.atmochat.config.RealTimeHandshakeInterceptor;
-import com.common.atmochat.data.domain.ChatRoom;
-import com.common.atmochat.data.service.ChatRoomService;
+import com.common.atmochat.data.service.MessageService;
 import com.common.atmochat.data.service.UserService;
 import com.common.atmochat.dto.ChatProtocol;
 import com.common.atmochat.dto.UserMessage;
@@ -39,7 +38,7 @@ public class ChatRoomController extends SpringBeanAutowiringSupport {
 
     private final static String CHAT = "/chat/";
 
-    private final ChatRoomService chatRoomService = BeanUtil.getBean(ChatRoomService.class);
+    private final MessageService messageService = BeanUtil.getBean(MessageService.class);
 
     private final UserService userService = BeanUtil.getBean(UserService.class);
 
@@ -65,8 +64,8 @@ public class ChatRoomController extends SpringBeanAutowiringSupport {
     @Ready(encoders = {JacksonEncoder.class})
     @DeliverTo(DeliverTo.DELIVER_TO.ALL)
     public ChatProtocol onReady(final AtmosphereResource r) throws IOException {
-        ChatRoom chatRoom = chatRoomService.findByRoomId(chatroomId);
-        if (chatRoom == null) {
+        com.common.atmochat.data.domain.Message message = messageService.findByRoomId(chatroomId);
+        if (message == null) {
             r.getResponse().sendError(404);
             return null;
         }
@@ -76,8 +75,8 @@ public class ChatRoomController extends SpringBeanAutowiringSupport {
 //        UserServiceImpl userServiceImpl = BeanUtil.getBean(UserServiceImpl.class);
 //        userServiceImpl.save(new User("id","manaaame", new Date(),new Date()));
         //Todo change to id
-        if (chatRoom != null) {
-            chatRoom.getMembers().forEach(user -> users.put(user.getBackId(), user.getName()));
+        if (message != null) {
+            message.getMembers().forEach(user -> users.put(user.getBackId(), user.getName()));
         }
         return new ChatProtocol(users, getRooms(factory.lookupAll()));
     }
@@ -119,19 +118,19 @@ public class ChatRoomController extends SpringBeanAutowiringSupport {
      * @throws IOException
      */
     @Message(encoders = {JacksonEncoder.class}, decoders = {ProtocolDecoder.class})
-    public ChatProtocol onMessage(ChatProtocol message) {
+    public ChatProtocol onMessage(ChatProtocol chatProtocol) {
 
         logger.info("Number of active threads from the given thread: " + Thread.activeCount());
 
-        logger.info("uuid: " + message.getUuid());
+        logger.info("uuid: " + chatProtocol.getUuid());
 
-        ChatRoom chatRoom = chatRoomService.findByRoomId(chatroomId);
-        if (chatRoom == null || !users.containsKey(message.getAuthor())) {
+        com.common.atmochat.data.domain.Message message = messageService.findByRoomId(chatroomId);
+        if (message == null || !users.containsKey(chatProtocol.getAuthor())) {
             return null;
         }
 
-        if (message.getMessage().contains("disconnecting")) {
-            String author = message.getAuthor();
+        if (chatProtocol.getMessage().contains("disconnecting")) {
+            String author = chatProtocol.getAuthor();
             if (author != null) {
                 users.remove(author);
             } else {
@@ -150,20 +149,20 @@ public class ChatRoomController extends SpringBeanAutowiringSupport {
 //            return new ChatProtocol(message.getAuthor(), " entered room " + chatroomName, users.keySet(), getRooms(factory.lookupAll()));
 //        }
 
-        message.setUsers(users);
-        logger.info("{} just send {}", message.getAuthor(), message.getMessage());
+        chatProtocol.setUsers(users);
+        logger.info("{} just send {}", chatProtocol.getAuthor(), chatProtocol.getMessage());
 
         //region saving the chat room
-        chatRoomService.save(new ChatRoom(
-                message.getUuid(),
-                chatRoom.getRoomId(),
-                chatRoom.getName(),
-                message.getMessage(),
-                chatRoom.getMembers(),
-                userService.findByBackId(message.getAuthor())));
+        messageService.save(new com.common.atmochat.data.domain.Message(
+                chatProtocol.getUuid(),
+                message.getRoomId(),
+                message.getName(),
+                chatProtocol.getMessage(),
+                message.getMembers(),
+                userService.findByBackId(chatProtocol.getAuthor())));
         //endregion saving the chat room
 
-        return new ChatProtocol(message.getAuthor(), message.getMessage(), users, getRooms(factory.lookupAll()));
+        return new ChatProtocol(chatProtocol.getAuthor(), chatProtocol.getMessage(), users, getRooms(factory.lookupAll()));
     }
 
     @Message(decoders = {UserDecoder.class})

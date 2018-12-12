@@ -1,8 +1,10 @@
 package com.common.atmochat.controller.rest;
 
-import com.common.atmochat.data.domain.ChatRoom;
+import com.common.atmochat.data.domain.Message;
 import com.common.atmochat.data.domain.User;
-import com.common.atmochat.data.service.ChatRoomService;
+import com.common.atmochat.data.domain.UserRoom;
+import com.common.atmochat.data.service.MessageService;
+import com.common.atmochat.data.service.UserRoomService;
 import com.common.atmochat.data.service.UserService;
 import com.common.atmochat.dto.rest.ChatRoomDTO;
 import com.common.atmochat.dto.rest.UserDTO;
@@ -27,7 +29,10 @@ public class SaveController {
     private UserService userService;
 
     @Autowired
-    private ChatRoomService chatRoomService;
+    private MessageService messageService;
+
+    @Autowired
+    private UserRoomService userRoomService;
 
     @PostMapping("/chatroom")
     public ResponseEntity saveChatRoom(@RequestBody ChatRoomDTO chatRoomDTO) {
@@ -36,7 +41,9 @@ public class SaveController {
                 .map(backId -> userService.findByBackId(backId))
                 .collect(Collectors.toList());
 
-        ChatRoom chatRoom = chatRoomService.save(new ChatRoom(chatRoomDTO.getName(), users));
+        Message chatRoom = messageService.save(new Message(chatRoomDTO.getName(), users));
+        users.forEach(user -> userRoomService.save(new UserRoom(user, chatRoom.getRoomId())));
+
         return ResponseEntity.ok(chatRoom.getId());
     }
 

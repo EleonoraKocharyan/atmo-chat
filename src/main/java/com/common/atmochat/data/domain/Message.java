@@ -9,7 +9,7 @@ import java.util.UUID;
  * Created by eleonorakocharyan on 11/27/18.
  */
 @Document
-public class ChatRoom extends AbstractEntity {
+public class Message extends AbstractEntity {
 
     private String roomId;
     private String name;
@@ -17,13 +17,13 @@ public class ChatRoom extends AbstractEntity {
     private Collection<User> members;
     private User author;
 
-    public ChatRoom(String name, Collection<User> members) {
+    public Message(String name, Collection<User> members) {
         this.name = name;
         this.members = members;
         this.roomId = UUID.randomUUID().toString();
     }
 
-    public ChatRoom(String id, String roomId, String name, String message, Collection<User> members, User author) {
+    public Message(String id, String roomId, String name, String message, Collection<User> members, User author) {
         this.id = id;
         this.roomId = roomId;
         this.name = name;
@@ -32,7 +32,7 @@ public class ChatRoom extends AbstractEntity {
         this.author = author;
     }
 
-    public ChatRoom() {
+    public Message() {
     }
 
     public String getRoomId() {

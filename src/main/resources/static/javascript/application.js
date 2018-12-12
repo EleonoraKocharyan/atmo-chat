@@ -60,6 +60,7 @@ $(function () {
             logLevel: 'debug',
             transport: transport,
             trackMessageLength: true,
+            enableProtocol: true,
             reconnectInterval: 5000,
             fallbackTransport: fallbackTransport};
 

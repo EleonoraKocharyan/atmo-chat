@@ -8,13 +8,11 @@ import java.util.Collection;
 /**
  * Created by eleonorakocharyan on 11/29/18.
  */
+
 public class ChatRoomDTO implements Serializable{
 
-    private Long id;
     private String name;
     private Collection<String> membersBackIds;
-
-
 
     public ChatRoomDTO() {
     }
@@ -33,13 +31,5 @@ public class ChatRoomDTO implements Serializable{
 
     public void setMembersBackIds(Collection<String> membersBackIds) {
         this.membersBackIds = membersBackIds;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 }

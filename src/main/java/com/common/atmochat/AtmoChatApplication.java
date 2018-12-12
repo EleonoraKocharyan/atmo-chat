@@ -3,7 +3,6 @@
 
 package com.common.atmochat;
 
-import org.atmosphere.client.TrackMessageSizeInterceptor;
 import org.atmosphere.cpr.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -15,6 +14,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -27,15 +27,8 @@ import java.util.Collections;
 //@EnableWebSocket
 //@SpringBootApplication(exclude = {MongoAutoConfiguration.class, MongoDataAutoConfiguration.class})
 @EnableMongoRepositories(basePackages = "com.common.atmochat.data.repository")
-
+@EnableSwagger2
 public class AtmoChatApplication {
-
-//    @Bean
-//    public UserServiceImpl userService(){
-//        return new UserServiceImpl();
-//    }
-
-
 
     @Bean
     public EmbeddedAtmosphereInitializer atmosphereInitializer() {
@@ -46,7 +39,6 @@ public class AtmoChatApplication {
     public AtmosphereResourceFactory atmosphereResourceFactory() throws ServletException, IllegalAccessException, InstantiationException {
         return atmosphereFramework().getAtmosphereConfig().resourcesFactory();
     }
-
 
     @Bean
     public AtmosphereFramework atmosphereFramework() throws ServletException, InstantiationException, IllegalAccessException {

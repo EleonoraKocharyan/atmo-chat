@@ -48,7 +48,7 @@ public class SaveController {
         Message chatRoom = messageService.save(new Message(chatRoomDTO.getName(), users));
         users.forEach(user -> userRoomService.save(new UserRoom(user, chatRoom.getRoomId())));
 
-        return ResponseEntity.ok(chatRoom.getId());
+        return ResponseEntity.ok(chatRoom.getRoomId());
     }
 
     @PostMapping("/user")

@@ -28,7 +28,7 @@ If you managed to run the application successfully than you can proceed to follo
  - **Add users to your chat application**
  You can add users through [your swagger](http://localhost:8090/swagger-ui.html)  in save-controller -> saveUser, by entering user's id and name.
  - **Create a group chat**
- You can create a group chat through [your swagger](http://localhost:8090/swagger-ui.html)  in save-controller -> saveChatRoom, by entering the name of the group and the ids of users, that were created in the previous step. As a result you'll get as a response the ID of your chat room.
+ You can create a group chat through [your swagger](http://localhost:8090/swagger-ui.html)  in save-controller -> saveChatRoom, by entering the name of the group and the ids of users, that were created in the previous step. As a result you'll get the ID of your chat room as a response.
 
 ## How to use the created group chat
 Now everything is set and all that's left to do is to open http://localhost:8090/ , enter the room ID, enter the user's ID and chat. 

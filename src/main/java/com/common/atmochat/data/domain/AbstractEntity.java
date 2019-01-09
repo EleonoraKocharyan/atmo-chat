@@ -2,7 +2,10 @@ package com.common.atmochat.data.domain;
 
 //import org.hibernate.annotations.CreationTimestamp;
 //import org.hibernate.annotations.UpdateTimestamp;
+
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 //
 //import javax.persistence.Column;
 //import javax.persistence.MappedSuperclass;
@@ -21,17 +24,15 @@ public abstract class AbstractEntity {
     @Id
     protected String id;
 
-//    @CreationTimestamp
+    @CreatedDate
     private Date createdAt;
 
-//    @UpdateTimestamp
+    @LastModifiedDate
     private Date updatedAt;
     // endregion
 
     // region Constructors
     public AbstractEntity() {
-        createdAt=new Date();
-        updatedAt=new Date();
     }
     // endregion
 
@@ -61,23 +62,5 @@ public abstract class AbstractEntity {
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
-
-
-    // endregion
-
-//    // region Transient methods
-//    @PrePersist
-//    protected void onPrePersist() {
-//        this.createdAt = new Date();
-//        this.updatedAt = this.createdAt;
-//    }
-//
-//    @PreUpdate
-//    protected void onPreUpdate() {
-//        this.updatedAt = new Date();
-//    }
-//    // endregion
-
-
 
 }

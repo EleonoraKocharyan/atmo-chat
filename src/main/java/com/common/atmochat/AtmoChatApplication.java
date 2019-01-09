@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
@@ -22,6 +23,7 @@ import java.util.Collections;
 
 @EnableAutoConfiguration(exclude = {
         SecurityAutoConfiguration.class})
+@EnableMongoAuditing
 @Configuration
 @ComponentScan(basePackages = "com.common")
 //@EnableWebSocket

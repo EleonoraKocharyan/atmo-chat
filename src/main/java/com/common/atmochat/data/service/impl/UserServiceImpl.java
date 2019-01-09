@@ -24,7 +24,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User save(User user){
-        user.setUpdatedAt(new Date());
         user.setId(nextSequenceUtil.getNextSequence("user"));
        return userRepository.save(user);
 
